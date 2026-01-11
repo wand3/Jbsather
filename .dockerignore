@@ -1,0 +1,15 @@
+**/node_modules
+**/.git
+**/.env
+**/dist
+**/build
+**/coverage
+**/.next
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.DS_Store
+*.log
+docker-compose.override.yml
+.env.local
