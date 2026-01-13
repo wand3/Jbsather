@@ -1,0 +1,8 @@
+python_services/env/
+frontend/node_modules/
+backend/node_modules/
+python_services/__py*/
+__py*/
+.env
+# does not ignore the README.md file
+!README.md
