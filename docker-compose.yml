@@ -1,0 +1,88 @@
+services:
+  # Backend Node.js/Express/TypeScript
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: jbs-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+    #   - DATABASE_URL=postgresql://jbsuser:jbspassword@postgres:5432/jobplatform
+    #   - REDIS_URL=redis://redis:6379
+      - PYTHON_SERVICE_URL=http://python_services:5000
+      - PORT=4000
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+    #   - ./backend/tsconfig.json:/app/tsconfig.json
+      - /app/node_modules
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+    #   redis:
+    #     condition: service_healthy
+    networks:
+      - jbs-network
+    restart: unless-stopped
+    command: sh -c "npm install && npm run dev"
+
+  # Frontend React/TypeScript/Vite
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: jbs-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+      - PORT=3000
+    volumes:
+      - ./frontend/src:/app
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - jbs-network
+    restart: unless-stopped
+    # command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && npx vite --host 0.0.0.0"
+
+  # Python Services (Dork, Scraping, NLP)
+  python_services:
+    build:
+      context: ./python_services
+      dockerfile: Dockerfile
+    container_name: jbs-python-services
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FASTAPI_ENV=development
+      - PORT=5000
+      # Force the container to prioritize the virtual env binaries
+      - VIRTUAL_ENV=/app/env
+      - PATH="/app/env/bin:$PATH"
+    volumes:
+      - ./python_services:/app     # Mount the entire folder to /app
+      - /app/env                   # Keep the venv separate from your Mac host
+    networks:
+      - jbs-network
+    restart: unless-stopped
+    # Use 'python' (no 3) for the venv's internal binary as it's more standard
+    command: >
+      sh -c "python3 -m venv /app/env && 
+             /app/env/bin/pip install --upgrade pip && 
+             /app/env/bin/pip install -r /app/requirements.txt && 
+             /app/env/bin/python /app/run.sh"
+             
+networks:
+  jbs-network:
+    driver: bridge
+    name: jbs-network

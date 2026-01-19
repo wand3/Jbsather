@@ -51,7 +51,7 @@ CMD ["python", "-m", "app.main"]
 
 
 # Use the official Python image from Docker Hub
-FROM python:latest
+FROM python:3.9-slim
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -60,4 +60,5 @@ WORKDIR /app
 COPY . /app
 
 # Command to run your Python application when the container starts
-CMD ["python", "./your_script_name.py"]
+CMD ["python", "./run.sh"]
+
