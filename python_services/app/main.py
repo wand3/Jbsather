@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI
-# from .routes import auth_router, user_router
+from .routes import main_router
 from .logger import logger
 # from .database import lifespan # Ensure you have a lifespan handler defined somewhere!
 
@@ -14,7 +14,7 @@ def create_app() -> FastAPI:
     logger.info(f'Application started -----------')
     
     # Include routes
-    # app.include_router(auth_router)
+    app.include_router(main_router)
     # app.include_router(user_router)
 
     return app

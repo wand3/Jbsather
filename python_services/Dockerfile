@@ -14,10 +14,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # -------------------------
 # System dependencies
 # -------------------------
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     gcc \
+    # python3-venv \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,39 +27,33 @@ RUN apt-get update && apt-get install -y \
 # -------------------------
 WORKDIR /app
 
+
 # -------------------------
 # Install Python deps first (better caching)
 # -------------------------
 COPY requirements.txt .
 
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+# RUN pip install --upgrade pip \
+#     && pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # -------------------------
 # Copy application code
 # -------------------------
-COPY app ./app
+COPY . .
 
 # -------------------------
 # Expose service port (change if needed)
 # -------------------------
-EXPOSE 8000
+EXPOSE 5000
 
 # -------------------------
 # Default command
 # -------------------------
-CMD ["python", "-m", "app.main"]
-
-
-# Use the official Python image from Docker Hub
-FROM python:3.9-slim
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy your local application files into the container
-COPY . /app
+# CMD ["python", "-m", "app.main"]
 
 # Command to run your Python application when the container starts
+RUN chmod +x run.sh
 CMD ["python", "./run.sh"]
 

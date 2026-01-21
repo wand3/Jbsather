@@ -27,5 +27,4 @@ EXPOSE 6000
 # Start the API
 # CMD ["node", "src/server.js"]
 CMD ["npm", "run", "dev"]
-
     

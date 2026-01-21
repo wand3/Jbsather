@@ -6,17 +6,17 @@ services:
       dockerfile: Dockerfile
     container_name: jbs-backend
     ports:
-      - "4000:4000"
+      - "3000:3000"
     environment:
       - NODE_ENV=development
     #   - DATABASE_URL=postgresql://jbsuser:jbspassword@postgres:5432/jobplatform
     #   - REDIS_URL=redis://redis:6379
       - PYTHON_SERVICE_URL=http://python_services:5000
-      - PORT=4000
+      - PORT=3000
     volumes:
       - ./backend/src:/app/src
       - ./backend/package.json:/app/package.json
-    #   - ./backend/tsconfig.json:/app/tsconfig.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
       - /app/node_modules
     # depends_on:
     #   postgres:
@@ -35,10 +35,10 @@ services:
       dockerfile: Dockerfile
     container_name: jbs-frontend
     ports:
-      - "3000:3000"
+      - "6000:6000"
     environment:
       - VITE_API_URL=http://localhost:3000
-      - PORT=3000
+      - PORT=6000
     volumes:
       - ./frontend/src:/app
       - ./frontend/public:/app/public
@@ -66,21 +66,14 @@ services:
       - PYTHONUNBUFFERED=1
       - FASTAPI_ENV=development
       - PORT=5000
-      # Force the container to prioritize the virtual env binaries
-      - VIRTUAL_ENV=/app/env
-      - PATH="/app/env/bin:$PATH"
     volumes:
       - ./python_services:/app     # Mount the entire folder to /app
-      - /app/env                   # Keep the venv separate from your Mac host
     networks:
       - jbs-network
     restart: unless-stopped
-    # Use 'python' (no 3) for the venv's internal binary as it's more standard
-    command: >
-      sh -c "python3 -m venv /app/env && 
-             /app/env/bin/pip install --upgrade pip && 
-             /app/env/bin/pip install -r /app/requirements.txt && 
-             /app/env/bin/python /app/run.sh"
+    # Use 'fastapi dev' for hot-reloading and development features
+    command: python3 -m fastapi dev app/main.py --host 0.0.0.0 --port 5000    # # Use 'python' (no 3) for the venv's internal binary as it's more standard
+   
              
 networks:
   jbs-network:

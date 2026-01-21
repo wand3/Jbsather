@@ -22,7 +22,7 @@ RUN npm ci --omit=dev
 COPY src ./src
 
 # Expose API port
-EXPOSE 4000
+EXPOSE 3000
 
 # Start the API
 # CMD ["node", "src/server.js"]
