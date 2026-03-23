@@ -26,6 +26,6 @@ EXPOSE 3000
 
 # Start the API
 # CMD ["node", "src/server.js"]
-CMD ["npm", "run", "start"]
+CMD ["npm", "dev"]
 
     

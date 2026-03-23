@@ -1,0 +1,19 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    "target": "es6",
+    "module": "NodeNext",             /* Crucial for ES6 module support in Node */
+    "moduleResolution": "NodeNext",   /* Crucial for ES6 module support in Node */
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist"],
+  // "ts-node": {
+  //   "esm": true                       /* Tells ts-node to run in ES module mode */
+  // }
+}
