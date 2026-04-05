@@ -1,19 +1,19 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Jbsather BackendAPIs",
-  "main": "src/server.ts",
-  "directories": {
-    "test": "tests"
-  },
+  "main": ".eslintrc.js",
+  "type": "module",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
-    "lint": "eslint 'src/**/*.ts'"
+    "lint": "eslint 'src/**/*.ts'",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "wand3",
   "license": "ISC",
+  "description": "Jbsather Backend",
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
@@ -22,10 +22,14 @@
     "express": "^5.2.1",
     "install": "^0.13.0",
     "nodemon": "^3.1.14",
-    "npm": "^10.9.7",
+    "npm": "^10.9.8",
     "prettier": "^3.8.1",
+    "prisma": "^6.19.3",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3"
   }
 }

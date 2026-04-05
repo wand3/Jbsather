@@ -2,7 +2,7 @@
 FROM node:18.20.5-bullseye-slim
 
 # Set environment
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 
 # Create app directory
 WORKDIR /backend
@@ -15,8 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy dependency manifests first (for caching)
 COPY package.json package-lock.json ./
 
-# Install only production dependencies
-RUN npm ci --omit=dev
+# Install only development dependencies
+RUN npm ci --only=dev
+
+# Ensure ts-node and TypeScript exist in container
+RUN npm install -D ts-node typescript
 
 # Copy application source
 COPY src ./src
@@ -25,7 +28,4 @@ COPY src ./src
 EXPOSE 3000
 
 # Start the API
-# CMD ["node", "src/server.js"]
-CMD ["npm", "dev"]
-
-    
+CMD ["npm", "run", "dev"]

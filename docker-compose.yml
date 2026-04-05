@@ -1,4 +1,25 @@
 services:
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      # Inject variables from the .env file
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}"
+    # volumes:
+    #   - ./db:/var/lib/postgresql/data
+      # - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # Use the injected variables for the healthcheck ping too
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   # Backend Node.js/Express/TypeScript
   backend:
     build:
@@ -9,20 +30,22 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-    #   - DATABASE_URL=postgresql://jbsuser:jbspassword@postgres:5432/jobplatform
-    #   - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql+syncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}"
       - PYTHON_SERVICE_URL=http://python_services:5000
       - PORT=3000
     volumes:
-      - ./backend/src:/app/src
-      - ./backend/package.json:/app/package.json
-      - ./backend/tsconfig.json:/app/tsconfig.json
-      - /app/node_modules
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_healthy
+        - ./backend:/app
+        - ./backend/node_modules:/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy    
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend/package.json
+        - action: rebuild
+          path: ./backend/tsconfig.json
+
     networks:
       - jbs-network
     restart: unless-stopped
@@ -77,7 +100,7 @@ services:
     # Use 'fastapi dev' for hot-reloading and development features
     command: python3 -m fastapi dev app/main.py --host 0.0.0.0 --port 5000    # # Use 'python' (no 3) for the venv's internal binary as it's more standard
    
-             
+
 networks:
   jbs-network:
     driver: bridge
