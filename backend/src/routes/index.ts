@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import type { Request, Response } from "express";
-import app from '../app.js';
+import { home } from '../controllers/indexController.js';
+
 
 const router = Router()
 
-app.get('/', (req: Request, res: Response) => {
-    res.json({"Response":"Index Callback"})
-})
+router.get('/', home)
 
 export default router
