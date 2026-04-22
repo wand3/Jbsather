@@ -15,23 +15,197 @@ datasource db {
 }
 
 // user model 
-model user {
-  user_id            Int                  @id @default(uuid())
-  name               String               @VarChar(256)
-  email              String               @unique
-  passwd             String               
-  isAuthenticated    Boolean              @default(false)
-  created_at         DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at         DateTime?            @db.Timestamptz(6)
+model User {
+  user_id         String    @id @default(cuid())
+  name            String    @db.VarChar(50)
+  email           String    @unique
+  passwd          String
+  isAuthenticated Boolean   @default(false)
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+
+  // Core identity
+
+  // User (enrichment)
+  bio               String? // short professional summary
+  headline          String? // e.g. "Senior Developer & Tech Lead"
+  location          String? // city, country
+  yearsOfExperience Int?
+  currentRole       String?
+  profileImageUrl   String?
+  preferredWorkEnv  String? // remote, hybrid, on-site
+  availability      String? // immediate, two weeks, etc.
 
   // Relationships
-
+  educations       Education[]
+  certifications   Certification[]
+  experiences      Experience[]
+  skills           Skill[]
+  languages        Language[]
+  socialLinks      SocialLink[]
+  personalityTrait PersonalityTrait[]
 }
 
+// ---------------------------
+// Hard facts: Education
+// ---------------------------
+model Education {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
 
-model user_personality {
-  user_id
-  voice_tone
-  negative_constraints
-  attitude
+  institution  String
+  degree       String? // B.Sc., M.A., etc.
+  fieldOfStudy String?
+  startDate    DateTime?
+  endDate      DateTime?
+  grade        String? // GPA or honours
+  description  String?
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @db.Timestamptz(6)
+
+  @@index([userId])
+}
+
+// ---------------------------
+// Hard facts: Certifications
+// ---------------------------
+model Certification {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  name                String
+  issuingOrganization String
+  issueDate           DateTime?
+  expirationDate      DateTime?
+  credentialId        String?
+  url                 String? // link to verification
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([userId])
+}
+
+// ---------------------------
+// Dynamic experiences (roles)
+// ---------------------------
+model Experience {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  role        String
+  company     String
+  startDate   DateTime?
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  description String? // overall responsibilities
+
+  // From JSON: context_tags
+  contextTags String[] // e.g. ["leadership", "python", "crisis_management"]
+
+  // Micro-stories linked to this experience
+  experienceStories ExperienceStory[]
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([userId])
+  @@index([current])
+}
+
+// ---------------------------
+// Micro stories (STAR / failure / leadership)
+// ---------------------------
+model ExperienceStory {
+  id           String     @id @default(cuid())
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  trigger   String // e.g. "Tell me about a time you failed."
+  storyText String // the actual narrative
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([experienceId])
+}
+
+// ---------------------------
+// Enriched persona: Skills (with proficiency)
+// ---------------------------
+model Skill {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  name              String // e.g. "Python", "Project Management"
+  category          String? // "technical", "soft", "domain"
+  proficiency       String? // "beginner", "intermediate", "advanced", "expert"
+  yearsOfExperience Int?
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+// ---------------------------
+// Enriched persona: Languages spoken
+// ---------------------------
+model Language {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  name        String // e.g. "English", "Spanish"
+  proficiency String // "native", "fluent", "professional", "basic"
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+// ---------------------------
+// Enriched persona: Social / professional links
+// ---------------------------
+model SocialLink {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  platform String // "LinkedIn", "GitHub", "Twitter", "Portfolio"
+  url      String
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([userId])
+}
+
+// ---------------------------
+// User Persona / PersonalityTrait
+// ---------------------------
+model PersonalityTrait {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  voice_tone           String? // e.g. "Professional but direct. Uses 'built' instead of 'facilitated'."
+  negative_constraints String[] // e.g. ["passionate", "thrilled", "delve"]
+  attitude             String? // e.g "driven, enthusiatic"
+  trait                String? // e.g. "Analytical", "Collaborative", "Adaptable"
+  description          String? // optional explanation
+  source               String? // "self-assessment", "feedback", "test"
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@unique([userId, trait])
+  @@index([userId])
 }
