@@ -2,6 +2,7 @@ import express from 'express';
 import { errorHandler } from './middlewares/errorHandler.js';
 import indexRoutes from './routes/index.js'
 import authRoutes from './routes/authRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 
 const app = express();
 
@@ -10,6 +11,8 @@ app.use(express.json());
 // API Routes
 app.use('/', indexRoutes)
 app.use('/auth', authRoutes)
+app.use('/user', userRoutes)
+
 
 
 
