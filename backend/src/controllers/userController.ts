@@ -1,8 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { PrismaClient } from '../generated/prisma/client.js'
 import { errorHandler } from "../middlewares/errorHandler.js";
-
-const prisma = new PrismaClient()
+import { prisma } from "../config/db.js";
 
 const allUsers = async function (req: Request, res: Response) {
   try {
@@ -14,6 +12,12 @@ const allUsers = async function (req: Request, res: Response) {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+// Update profile
+
+
+
 
 // // Read all items
 // export const getItems = (req: Request, res: Response, next: NextFunction) => {

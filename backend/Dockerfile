@@ -9,7 +9,7 @@ WORKDIR /backend
 
 # Install OS deps only if native modules are needed
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
+    ca-certificates && apt-get install -y openssl \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency manifests first (for caching)
@@ -28,4 +28,6 @@ COPY src ./src
 EXPOSE 3000
 
 # Start the API
-CMD ["npm", "run", "dev"]
+# CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm run db:deploy && npm run dev"]
+
