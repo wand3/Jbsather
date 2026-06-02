@@ -24,6 +24,7 @@ async function main() {
       name: "Alice",
       passwd: "hashedpassword123",
       isAuthenticated: true,
+      role: "vather",
       bio: "Senior backend engineer with a focus on scalable systems.",
       headline: "Senior Backend Engineer",
       location: "Lagos, Nigeria",

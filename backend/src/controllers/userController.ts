@@ -17,15 +17,29 @@ const allUsers = async function (req: Request, res: Response) {
 // Update profile
 
 
+// Certification (CREATE / UPDATE / DELETE)
 
 
-// // Read all items
-// export const getItems = (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       res.json(User);
-//     } catch (error) {
-//       next(error);
-//     }
-//   };
+// Education (CREATE / UPDATE / DELETE)
+
+
+// Experience (CREATE / UPDATE / DELETE)
+
+
+// Experience Story (CREATE / UPDATE / DELETE)
+
+
+// Language (CREATE / UPDATE / DELETE)
+
+
+// Personality Trait (CREATE / UPDATE / DELETE)
+
+
+// Skills (CREATE / UPDATE / DELETE)
+
+
+// Social links (CREATE / UPDATE / DELETE)
+
+
 
 export {allUsers};

@@ -57,6 +57,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
         data: {
             name,
             email,
+            role:"free_seeker",
             passwd: hashedPass,
         },
     })
@@ -70,7 +71,8 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
             user: {
                 id : user.user_id,
                 name: user.name,
-                email: user.email, 
+                email: user.email,
+                role: user.role
             },
             token,
         },
@@ -107,6 +109,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       user: {
         id: user.user_id,
         email: email,
+        role:user.role
       },
       token,
     },
