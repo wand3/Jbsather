@@ -7,7 +7,7 @@ import { requirePermission } from "../middlewares/permissions.js";
 const router = Router();
 
 // router.use(authMiddleware)
-router.get('/users', authMiddleware, requirePermission("create_job"), allUsers)
+router.get('/users', authMiddleware, requirePermission("vather"), allUsers)
 
 
 export default router;

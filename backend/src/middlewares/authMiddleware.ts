@@ -2,48 +2,51 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../config/db.js";
 import type { Request, Response, NextFunction } from "express";
 
+
 // Read the token from the request
 // Check if token is valid
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   let token;
-  const id = req.params.id as string;
-   
-    
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
+  if (req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+    console.log(token)
   } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
+    console.log(token)
+
   }
 
   if (!token) {
-    return res.status(401).json({ error: "Not authorized, no token provided" });
+    return res.status(401).json({ error: 'Not authorized, no token provided' });
+  }
+
+  // 🔐 Ensure secret is available
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET is not defined');
   }
 
   try {
-    // Verify token and extract the user Id
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, secret) as { id: string; role?: string };
+    console.log(decoded)
 
-    // const user = await prisma.user.findUnique({
-    //   where: { user_id: decoded.id },
-    // });
-    // Added 'await' which was missing in the original code
     const user = await prisma.user.findUnique({
       where: { user_id: decoded.id },
-      // Optional: Exclude password from the returned data
-      // select: { id: true, email: true, name: true, created_at: true } 
-    });  
+    });
+    console.log(user)
 
     if (!user) {
-      return res.status(401).json({ error: "User no longer exists" });
+      return res.status(401).json({ error: 'User no longer exists' });
     }
 
-    req.user = user;
+    if (!user.isAuthenticated) return res.status(403).json({ error: "Account not activated" });
+
+
+    req.user = user;   // user object now contains role (if in DB)
+    console.log(user)
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Not authorized, token failed" });
+    return res.status(401).json({ error: 'Not authorized, token failed' });
   }
 };
