@@ -11,9 +11,9 @@ import { generateToken } from "../utils/generateToken.js";
 const getUser = async (req: Request, res: Response) => {
     try {
         const id = req.params.id as string;
-        // if (!id || !isValidCuid(id)) {
-        //     return res.status(400).json({ error: 'Invalid user ID format' });
-        // }
+        if (!id || !isValidCuid(id)) {
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
         
         // Added 'await' which was missing in the original code
         const user = await prisma.user.findUnique({
@@ -52,6 +52,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     const salt = await bcrypt.genSalt(10)
     const hashedPass = await bcrypt.hash(password, salt)
 
+  
     // create user 
     const user = await prisma.user.create({
         data: {
@@ -63,21 +64,24 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     })
 
     // Generate JWT Token
-    const token = generateToken(user.user_id, res);
+    if (isValidCuid(user.user_id)) {
+      const token = generateToken(user.user_id, res);
 
-    return res.status(201).json({
-        status: "success",
-        data: {
-            user: {
-                id : user.user_id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            },
-            token,
-        },
-        
-    })
+      return res.status(201).json({
+          status: "success",
+          data: {
+              user: {
+                  id : user.user_id,
+                  name: user.name,
+                  email: user.email,
+                  role: user.role
+              },
+              token,
+          },
+          
+      })
+    }
+    
 }
 
 // Login user 
