@@ -43,10 +43,7 @@ const SignupPage = () => {
     try {
       console.log('in1')
 
-      const response = await api.post<
-        SignupRequest,
-        AuthResponse
-      >("auth/register", {
+      const response = await api.post<SignupRequest, AuthResponse>("/auth/register", {
         email,
         name,
         password,
@@ -61,7 +58,7 @@ const SignupPage = () => {
         );
       }
 
-      alert(response.body?.data.user.name ?? "Account created successfully!");
+      alert(response.body ?? "Account created successfully!");
       setEmail("");
       setPassword("");
       setError("");

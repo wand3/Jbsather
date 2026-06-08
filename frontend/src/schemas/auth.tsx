@@ -13,19 +13,19 @@ export type UserRole =
   | "premium_seeker"
   | "admin";
 
-export interface User {
+export type User = {
     id: string;
     name: string;
     email: string;
     role?: UserRole;
   }
   
-interface AuthData {
+type AuthData = {
     user: User;
     token: string;
 }
 
-interface AuthResponse {
+type AuthResponse = {
     status: "success";
     data: AuthData;
 }

@@ -102,6 +102,7 @@ export default class satherApiClient {
           'Content-Type': 'application/json',
           ...options.headers,
         },
+        // allow_,
         // IMPORTANT: This tells the browser to automatically attach the 
         // HttpOnly cookie to the request. No manual tokens needed.
         credentials: 'include',
