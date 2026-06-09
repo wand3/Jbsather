@@ -4,8 +4,9 @@ type SignupRequest = {
     password: string;
 };
   
-type SignupResponse = {
-    message: string;
+type SigninRequest = {
+    email: string;
+    password: string;
 };
 
 export type UserRole =
@@ -30,4 +31,4 @@ type AuthResponse = {
     data: AuthData;
 }
 
-export type {SignupRequest, SignupResponse, AuthResponse}
+export type {SignupRequest, SigninRequest, AuthResponse}

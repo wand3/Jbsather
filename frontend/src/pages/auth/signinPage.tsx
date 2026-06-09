@@ -3,6 +3,8 @@ import EthosBody from "../../components/body";
 import React, { useEffect, useState } from "react";
 import UseApi from "../../hooks/useApi";
 import Config from "../../config";
+import { useNavigate } from "react-router-dom";
+import { AuthResponse, SigninRequest } from "../../schemas/auth";
 
 const SigninPage = () => {
 
@@ -11,9 +13,10 @@ const SigninPage = () => {
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-
-
+  
   const api = UseApi();
+  const navigate = useNavigate();
+  
 
   const handleEmailSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,35 +39,34 @@ const SigninPage = () => {
 
     setIsLoading(true);
 
-    // try {
-    //   const response = await api.post<
-    //     SignupRequest,
-    //     SignupResponse
-    //   >("/auth/hunt", {
-    //     email,
-    //     password,
-    //   });
+    try {
+      const response = await api.post<SigninRequest, AuthResponse>(
+        "/auth/login", {
+        email,
+        password,
+      });
     
-    //   if (!response.ok) {
-    //     throw new Error(
-    //       response.errors?.message ?? "Sign-up failed"
-    //     );
-    //   }
-    
-    //   alert(response.body?.message ?? "Account created successfully!");
-    
-    //   setEmail("");
-    //   setPassword("");
-    //   setError("");
-    // } catch (err) {
-    //   setError(
-    //     err instanceof Error
-    //       ? err.message
-    //       : "Something went wrong. Please try again."
-    //   );
-    // } finally {
-    //   setIsLoading(false);
+      if (!response.ok) {
+        throw new Error(
+          response.errors?.message ?? "Sign-in failed"
+        );
+      }
+        
+      setEmail("");
+      setPassword("");
+      setError("");
+      // make redirect to any page that was currently visited before auth was required 
+      navigate('/')
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }
 
   const handleGoogleSignup = () => {
     alert("Google sign-up flow would integrate with your backend OAuth endpoint.");
@@ -173,7 +175,7 @@ const SigninPage = () => {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             />
                         </svg>
-                        Creating account...
+                        Loading hunter...
                         </>
                     ) : (
                         "Sign up with email"

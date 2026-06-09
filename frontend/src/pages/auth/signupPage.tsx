@@ -1,10 +1,9 @@
 import EthosBody from "../../components/body";
 import React, { useEffect, useState } from "react";
 import { FacebookIcon, GoogleIcon } from "../../components/auth/icons";
-import { AuthResponse, SignupRequest, SignupResponse } from "../../schemas/auth";
+import { AuthResponse, SignupRequest } from "../../schemas/auth";
 import UseApi from "../../hooks/useApi";
 import { useNavigate } from "react-router-dom";
-import Config from "../../config";
 
 
 const SignupPage = () => {
@@ -49,9 +48,9 @@ const SignupPage = () => {
         password,
       });
 
-      console.log('in2')
-      console.log("response", response);
-      console.log("body", response.body);
+      // console.log('in2')
+      // console.log("response", response);
+      // console.log("body", response.body);
       if (!response.ok) {
         throw new Error(
           response.errors?.message ?? "Sign-up failed"

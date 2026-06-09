@@ -1,4 +1,4 @@
-import EthosBody from "../../components/body";
+import Body from "../../components/body";
 
 
 const Ethos = () => {
@@ -6,9 +6,9 @@ const Ethos = () => {
     
     return (
         <> 
-            <EthosBody nav>
+            <Body nav>
             
-            </EthosBody>
+            </Body>
 
         </>
     )
