@@ -4,15 +4,22 @@ import SigninPage from './pages/auth/signinPage';
 import SignupPage from './pages/auth/signupPage';
 import Ethos from './pages/home/base';
 import ApiProvider from './context/apiProvider';
+import { CookieConsentProvider } from "./features/cookie-consent/CookieConsentProvider";
+import { AppShell } from './AppShell';
 
 
 
 function App() {
+
   return (
     <>
+    
       <ApiProvider>
+       <CookieConsentProvider>
+        <AppShell />
 
-      
+        {/* <CookieConsentModal /> */}
+
         <Routes>
           <Route path="/v1" element={ <Ethos />} />
 
@@ -24,6 +31,8 @@ function App() {
             <SignupPage />
           } />
         </Routes>
+
+        </CookieConsentProvider>
       </ApiProvider>
                 
        
