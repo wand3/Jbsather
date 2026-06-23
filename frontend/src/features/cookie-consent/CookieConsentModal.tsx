@@ -32,103 +32,62 @@ export function CookieConsentModal() {
         className="
           absolute
           inset-0
-          bg-black/50
+          bg-slate/10
           backdrop-blur-sm
         "
       />
 
       {/* Modal */}
 
-      <div className="absolute inset-0 overflow-y-auto p-4">
+      <div className="absolute inset-0 overflow-y-auto p-2 ">
         <div className="flex min-h-full items-center justify-center">
         <div
           className="
             relative
             w-full
-            max-w-3xl
+            max-w-[600px]
+            max-h-[100%]
             overflow-hidden
             rounded-3xl
             bg-white
             shadow-2xl
+            backdrop-[#fff]
+            border-solid
+            p-[40px]
+            border-[#e0e4eb]
           "
         >
           {/* Header */}
 
-          <div className="border-b border-slate-100 px-8 pt-8 pb-6">
-            <div className="mb-6 flex justify-center">
-              <div
-                className="
-                  flex
-                  h-20
-                  w-20
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-slate-100
-                "
-              >
-                🍪
-              </div>
+          <div className="font-aeonik border-b border-slate-100 py-2 my-2">
+            <div className="mb-6 m-auto justify-center p-3 bg-slate-200 w-fit rounded-xl">
+              <img src="src/assets/cookies.png" height={55} width={55}/>
             </div>
 
             <h2
-              className="
-                text-center
-                text-3xl
-                font-bold
-                tracking-tight
-                text-slate-900
-              "
+              className="mb-4 text-center text-[32px] font-medium leading-[1.2] tracking-[-0.5px] text-[#16181d]"
             >
               Privacy Preferences
             </h2>
 
-            <p
-              className="
-                mx-auto
-                mt-4
-                max-w-2xl
-                text-center
-                text-sm
-                leading-7
-                text-slate-600
-              "
-            >
+            <p className="font-normal text-base leading-7 text-center text-[#16181d] p-0 m-0 box-border antialiased">
               We use cookies to keep our website
               running, remember your preferences,
               and understand how people use our
               services. Some cookies are essential,
               while others help us improve your
               experience.
-            </p>
 
-            <p
-              className="
-                mx-auto
-                mt-3
-                max-w-2xl
-                text-center
-                text-sm
-                leading-7
-                text-slate-600
-              "
-            >
               You can choose which optional cookies
               you'd like to allow and update your
               preferences at any time.
+              For a deeper dive into our cookie usage, do check out our <a href="/"> Cookie Policy</a>.
             </p>
           </div>
 
           {/* Categories */}
 
-          <div
-            className="
-              max-h-[420px]
-              space-y-3
-              overflow-y-auto
-              px-8
-              py-6
-            "
+          <div className="font-aeonik font-normal text-[#16181d] text-center my-3 p-0 box-border block h-auto mt-4 mb-0 overflow-hidden antialiased"
           >
             <CookieCategory
               title="Necessary Cookies"

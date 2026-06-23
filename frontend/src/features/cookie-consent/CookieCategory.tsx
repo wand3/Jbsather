@@ -20,44 +20,29 @@ export function CookieCategory({
   const [open, setOpen] = useState(false);
 
   return (
-    <div
-      className="
-        overflow-hidden
-        rounded-xl
-        border
-        border-slate-200
-        bg-white
-        transition-colors
-        hover:border-gray-300
-      "
-    >
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((prev) => !prev)}
-        className="
-          flex
-          w-full
-          items-center
-          justify-between
-          gap-4
-          p-4
-          text-left
-        "
-      >
+    <div className="relative border border-[#e0e4eb] border-b-0 rounded-t-lg p-4">
+      <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
             checked={checked}
             disabled={disabled}
-            onClick={(e) => e.stopPropagation()}
             onChange={(e) => onChange?.(e.target.checked)}
             className="
               h-4
               w-4
-              cursor-pointer
               rounded
               border-slate-300
+              accent-[#16181d]
+              hover:border-slate-700
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+              hover:bg-transparent
+              active:bg-slate-900
+              focus:outline-none
+              focus:ring-0
+              checked:bg-slate-900
+
             "
           />
 
@@ -66,14 +51,29 @@ export function CookieCategory({
           </span>
         </div>
 
-        <ChevronDown
-          size={18}
-          className={cn(
-            "shrink-0 text-slate-500 transition-transform duration-200",
-            open && "rotate-180"
-          )}
-        />
-      </button>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => setOpen((prev) => !prev)}
+          className="
+            bg-transparent
+            border-none
+            shadow-none
+            hover:bg-transparent
+            active:bg-transparent
+            focus:outline-none
+            focus:ring-0
+          "
+        >
+          <ChevronDown
+            size={20}
+            className={cn(
+              "text-slate-500 transition-transform duration-200",
+              open && "rotate-180"
+            )}
+          />
+        </button>
+      </div>
 
       <div
         className={cn(
@@ -84,17 +84,7 @@ export function CookieCategory({
         )}
       >
         <div className="overflow-hidden">
-          <div
-            className="
-              border-t
-              border-slate-100
-              px-4
-              py-4
-              text-sm
-              leading-6
-              text-slate-600
-            "
-          >
+          <div className="border-t border-slate-100 px-4 py-4 text-sm leading-6 text-slate-600">
             {description}
           </div>
         </div>
