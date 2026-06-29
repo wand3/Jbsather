@@ -44,15 +44,22 @@ model User {
   languages        Language[]
   socialLinks      SocialLink[]
   personalityTrait PersonalityTrait[]
+
+  // Resusmes
+  resumes Resumes[]
+
+  // Applications 
+  applications Applications[]
 }
 
 // ---------------------------
 // Hard facts: Education
 // ---------------------------
 model Education {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  resumes Resumes @relation("ResumeEducation", fields: [resumesId], references: [id])
 
   institution  String
   degree       String? // B.Sc., M.A., etc.
@@ -64,6 +71,7 @@ model Education {
 
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime? @db.Timestamptz(6)
+  resumesId String
 
   @@index([userId])
 }
@@ -72,9 +80,10 @@ model Education {
 // Hard facts: Certifications
 // ---------------------------
 model Certification {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  resumes Resumes @relation("ResumeCertification", fields: [resumesId], references: [id])
 
   name                String
   issuingOrganization String
@@ -85,6 +94,7 @@ model Certification {
 
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @db.Timestamptz(6)
+  resumesId  String
 
   @@index([userId])
 }
@@ -93,9 +103,10 @@ model Certification {
 // Dynamic experiences (roles)
 // ---------------------------
 model Experience {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  resumes Resumes @relation("ResumeExperience", fields: [resumesId], references: [id])
 
   role        String
   company     String
@@ -112,6 +123,7 @@ model Experience {
 
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @db.Timestamptz(6)
+  resumesId  String
 
   @@index([userId])
   @@index([current])
@@ -138,9 +150,10 @@ model ExperienceStory {
 // Enriched persona: Skills (with proficiency)
 // ---------------------------
 model Skill {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  resumes Resumes @relation("ResumeSkills", fields: [resumesId], references: [id])
 
   name              String // e.g. "Python", "Project Management"
   category          String? // "technical", "soft", "domain"
@@ -149,6 +162,7 @@ model Skill {
 
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @db.Timestamptz(6)
+  resumesId  String
 
   @@unique([userId, name])
   @@index([userId])
@@ -158,15 +172,17 @@ model Skill {
 // Enriched persona: Languages spoken
 // ---------------------------
 model Language {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  resumes Resumes @relation("ResumeLanguage", fields: [resumesId], references: [id])
 
   name        String // e.g. "English", "Spanish"
   proficiency String // "native", "fluent", "professional", "basic"
 
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @db.Timestamptz(6)
+  resumesId  String
 
   @@unique([userId, name])
   @@index([userId])
@@ -176,15 +192,17 @@ model Language {
 // Enriched persona: Social / professional links
 // ---------------------------
 model SocialLink {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  id      String  @id @default(cuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  resumes Resumes @relation("ResumeSocialLinks", fields: [resumesId], references: [id])
 
   platform String // "LinkedIn", "GitHub", "Twitter", "Portfolio"
   url      String
 
   created_at DateTime  @default(now()) @db.Timestamptz(6)
   updated_at DateTime? @db.Timestamptz(6)
+  resumesId  String
 
   @@index([userId])
 }
@@ -207,5 +225,43 @@ model PersonalityTrait {
   updated_at DateTime? @db.Timestamptz(6)
 
   @@unique([userId, trait])
+  @@index([userId])
+}
+
+model Resumes {
+  id           String @id @default(cuid())
+  userId       String
+  title        String
+  templateId   String @default("modern") @map("template_id")
+  themeColor   String @default("#3b82f6") @map("theme_color")
+  summary      String @default("")
+  personalInfo Json   @default("{}")
+  user         User   @relation(fields: [userId], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+
+  // Relationships
+  educations     Education[]     @relation("ResumeEducation")
+  certifications Certification[] @relation("ResumeCertification")
+  experiences    Experience[]    @relation("ResumeExperience")
+  skills         Skill[]         @relation("ResumeSkills")
+  languages      Language[]      @relation("ResumeLanguage")
+  socialLinks    SocialLink[]    @relation("ResumeSocialLinks")
+
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([userId])
+}
+
+model Applications {
+  id          String    @id @default(cuid())
+  userId      String
+  company     String
+  position    String
+  status      String    @default("none")
+  url         String?
+  notes       String?
+  dateApplied DateTime? @default(now()) @map("date_applied") @db.Timestamp(6)
+  user        User      @relation(fields: [userId], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
+
   @@index([userId])
 }

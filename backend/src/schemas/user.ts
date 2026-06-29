@@ -26,6 +26,28 @@ export interface User {
 };
 
 // ---------------------------
+// Hard facts: Education
+// ---------------------------
+export interface Education {
+  id: string;
+  userId: string;
+  name: string;
+  degree?: string;
+  classOfCertificate?: string;
+  issuingInstitution: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  issueDate: Date | null;
+  credentialId?: string | null;
+  url?: string | null;
+  created_at: Date;
+  updated_at: Date | null;
+
+  // Relations
+  user?: User;
+}
+
+// ---------------------------
 // Hard facts: Certifications
 // ---------------------------
 export interface Certification {
