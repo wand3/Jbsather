@@ -8,7 +8,6 @@ import type { Certification, Experience, Language, Skill, Education, SocialLink 
 // }
 
 export interface ResumeContent {
-    userId: string;
     title: string;
     personalInfo: {
         fullName: string;
@@ -28,7 +27,7 @@ export interface Resume {
     title: string;
     templateId?: string;
     themeColor?: string;
-    // content: ResumeContent;
+    content: ResumeContent;
     createdAt: string;
     updatedAt: string;
 }

@@ -15,55 +15,106 @@ const getResumes = async function (req: Request, res: Response) {
 
 
 // Resumes (CREATE / UPDATE / DELETE)
-const createResume = async function(req: Request, res: Response){
+export const createResume = async function(req: Request, res: Response){
   try {
     const id = req.params.id as string;
-    const { title, templateId, themeColor, personalInfo, summary, educations, certifications, experience, skills, Language, socialLinks} = req.body
+    const { title, templateId, themeColor, personalInfo, summary, educationId, certificationId, experienceId, skillsId, LanguageId, socialLinksId} = req.body
+
+    
+    
+    let finalEducationId = educationId
+    let finalCertificationsId = certificationId
+    let finalExperienceId = experienceId
+    let finalSkillsId = skillsId
+    let finalLangauagesId = LanguageId
+    let finalSocialLinksId = socialLinksId
 
     const user = await prisma.user.findUnique({
-        where: { user_id: id },
+      where: { user_id: id },
+      include: {educations: true, certifications: true, experiences: true, skills: true, socialLinks: true, languages: true}
     });
-    
+
+    if (!educationId || !certificationId || !experienceId || !skillsId || !LanguageId || !socialLinksId) {
+      
+
+      if (!educationId) finalEducationId = user?.educations.map(e => ({id: e.id}))
+      if (!certificationId) finalCertificationsId = user?.certifications.map(e => ({id: e.id}))
+      if (!experienceId) finalExperienceId = user?.experiences.map(e => ({id: e.id}))
+      if (!skillsId) finalSkillsId = user?.skills.map(e => ({id: e.id}))
+      if (!LanguageId) finalLangauagesId = user?.languages.map(e => ({id: e.id}))
+      if (!socialLinksId) finalSocialLinksId = user?.socialLinks.map(e => ({id: e.id}))
+
+    } else {
+      finalEducationId = educationId.map((id: string) => ({id}))
+      finalCertificationsId = certificationId.map((id: string) => ({id}))
+      finalExperienceId = experienceId.map((id: string) => ({id}))
+      finalSkillsId = skillsId.map((id: string) => ({id}))
+      finalLangauagesId = LanguageId.map((id: string) => ({id}))
+      finalSocialLinksId = socialLinksId.map((id: string) => ({id}))
+    }
+
     const newResume = await prisma.resumes.create({
-        userId?: user?.user_id,
+      data:  {
         title: title || 'Untitled Resume',
+        userId: id,
         templateId: templateId || 'modern',
         themeColor: themeColor || '#3b82f6',
         personalInfo: { fullName: user?.name, email: user?.email, phone: user?.email, location: user?.location, website: user?.headline },
-        summary: '',
-        educations?: educations,
-        certifications?: certifications,
-        experiences?: experience,
-        skills?: skills,
-        languages?: Language,
-        socialLinks?: socialLinks,
-      })
+        summary: summary,
+        educations: {connect: finalEducationId},
+        certifications: {connect: finalCertificationsId},
+        experiences: {connect: finalExperienceId},
+        skills: {connect: finalSkillsId},
+        languages: {connect: finalLangauagesId},
+        socialLinks: {connect: finalSocialLinksId},
+      },
+      include: {educations: true, certifications: true, experiences: true, skills: true, socialLinks: true, languages: true}
+
+
+    })
+
+    res.status(201).json(newResume)
+
+    // const newResume = await prisma.resumes.create({
+    //     userId?: user?.user_id,
+    //     title: title || 'Untitled Resume',
+    //     templateId: templateId || 'modern',
+    //     themeColor: themeColor || '#3b82f6',
+    //     personalInfo: { fullName: user?.name, email: user?.email, phone: user?.email, location: user?.location, website: user?.headline },
+    //     summary: '',
+    //     educations?: educations,
+    //     certifications?: certifications,
+    //     experiences?: experience,
+    //     skills?: skills,
+    //     languages?: Language,
+    //     socialLinks?: socialLinks,
+    //   })
 
     // Generate JWT Token
-    if (user?.user_id) {
+    // if (user?.user_id) {
 
-      return res.status(201).json({
-          status: "success",
-          data: {
-              resume: {
-                title: newResume.title,
-                templateId: newResume.templateId,
-                themeColor: newResume.themeColor,
-                personalInfo: newResume.personalInfo,
-                summary: newResume.summary,
-                educations?: newResume.educations,
-                certifications?: certifications,
-                experiences?: experience,
-                skills?: skills,
-                languages?: Language,
-                socialLinks?: socialLinks,
-              },
-          },
-       })
-      };  
-    } catch (e) {
-      console.error(e);
-    };
+    //   return res.status(201).json({
+    //       status: "success",
+    //       data: {
+    //           resume: {
+    //             title: newResume.title,
+    //             templateId: newResume.templateId,
+    //             themeColor: newResume.themeColor,
+    //             personalInfo: newResume.personalInfo,
+    //             summary: newResume.summary,
+    //             educations?: newResume.educations,
+    //             certifications?: certifications,
+    //             experiences?: experience,
+    //             skills?: skills,
+    //             languages?: Language,
+    //             socialLinks?: socialLinks,
+    //           },
+    //       },
+    //    })
+    //   };  
+  } catch (e) {
+    console.error(e);
+  };
 
 // Education (CREATE / UPDATE / DELETE)
 
@@ -85,6 +136,7 @@ const createResume = async function(req: Request, res: Response){
 
 // Social links (CREATE / UPDATE / DELETE)
 
+}
 
 
-export {getResumes, createResume};
+export {getResumes, createResume}
