@@ -8,6 +8,7 @@ import type { Certification, Experience, Language, Skill, Education, SocialLink 
 // }
 
 export interface ResumeContent {
+    userId: string;
     title: string;
     personalInfo: {
         fullName: string;

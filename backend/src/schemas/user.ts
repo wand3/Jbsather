@@ -2,6 +2,7 @@ export interface User {
   user_id: string;
   name: string;
   email: string;
+  phone: string;
   avatar?: string;
   passwd: string;
   isAuthenticated: boolean;
@@ -40,8 +41,8 @@ export interface Education {
   issueDate: Date | null;
   credentialId?: string | null;
   url?: string | null;
-  created_at: Date;
-  updated_at: Date | null;
+  created_at?: Date;
+  updated_at?: Date | null;
 
   // Relations
   user?: User;

@@ -29,6 +29,11 @@ export const createResume = async function(req: Request, res: Response){
     let finalLangauagesId = LanguageId
     let finalSocialLinksId = socialLinksId
 
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing user_id for resume creation." });
+    }
+
     const user = await prisma.user.findUnique({
       where: { user_id: id },
       include: {educations: true, certifications: true, experiences: true, skills: true, socialLinks: true, languages: true}
@@ -56,10 +61,18 @@ export const createResume = async function(req: Request, res: Response){
     const newResume = await prisma.resumes.create({
       data:  {
         title: title || 'Untitled Resume',
-        userId: id,
+        userId: user?.user_id ?? null,
         templateId: templateId || 'modern',
         themeColor: themeColor || '#3b82f6',
-        personalInfo: { fullName: user?.name, email: user?.email, phone: user?.email, location: user?.location, website: user?.headline },
+        personalInfo: {
+          create: { 
+            fullName: user?.name ?? null, 
+            email: user?.email ?? null, 
+            phone: user?.phone ?? null, // ✅ Fixed logic bug (was user.email)
+            location: user?.location ?? null, 
+            website: user?.headline ?? null
+           }
+        },
         summary: summary,
         educations: {connect: finalEducationId},
         certifications: {connect: finalCertificationsId},
@@ -139,4 +152,4 @@ export const createResume = async function(req: Request, res: Response){
 }
 
 
-export {getResumes, createResume}
+export {getResumes}
